@@ -10,6 +10,7 @@ public class LoginController {
     @FXML private TextField txtUsername;
     @FXML private PasswordField txtPassword;
     @FXML private Label lblStatus;
+    @FXML private Button btnLogin;
 
     @FXML
     private void handleLogin(ActionEvent event) {
@@ -26,7 +27,21 @@ public class LoginController {
         // ==============================================================================
 
         // --- TULIS KODE ANDA DI BAWAH INI ---
-
+        UmbrellaDBManager db = new UmbrellaDBManager();
+        String username = txtUsername.getText();
+        String password = txtPassword.getText();
+        String status = db.validateUser(username, password);
+        if (status != null) {
+            UmbrellaApp.loggedInUser = username;
+            try {
+                UmbrellaApp.switchScene("umbrella-view.fxml");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        else {
+            lblStatus.setText("AUTHENTICATION FAILED");
+        }
 
     }
 }

@@ -38,9 +38,24 @@ public class UmbrellaController implements Initializable {
         // ==============================================================================
 
         // --- TULIS KODE ANDA DI BAWAH INI ---
+        colName.setCellValueFactory(new PropertyValueFactory<>("itemName"));
+        colInitial.setCellValueFactory(new PropertyValueFactory<>("initialStock"));
+        colSupply.setCellValueFactory(new PropertyValueFactory<>("newSupply"));
+        colFinal.setCellValueFactory(new PropertyValueFactory<>("finalStock"));
 
-
-
+//        tableInventory.setItems(masterData);
+//        tableInventory.setEditable(true);
+//        tableInventory.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+//        tableInventory.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+//            if (newVal != null) {
+//                selectedItem = newVal;
+//                txtItem.setText(newVal.getItemName());
+//                txtInitial.setText(String.valueOf(newVal.getInitialStock()));
+//                txtSupply.setText(String.valueOf(newVal.getNewSupply()));
+//                txtItem.setDisable(true);
+//            }
+//        });
+//        refreshTable();
 
         // ==============================================================================
         // TODO 2: LISTENER KLIK BARIS TABEL (SELECTION MODEL)
@@ -58,9 +73,11 @@ public class UmbrellaController implements Initializable {
         tableInventory.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 // --- TULIS KODE ANDA DI BAWAH INI ---
-
-
-
+                selectedItem = newVal;
+                txtItem.setText(newVal.getItemName());
+                txtInitial.setText(String.valueOf(newVal.getInitialStock()));
+                txtSupply.setText(String.valueOf(newVal.getNewSupply()));
+                txtItem.setDisable(true);
             }
         });
 
@@ -84,8 +101,25 @@ public class UmbrellaController implements Initializable {
         // ==============================================================================
 
         // --- TULIS KODE ANDA DI BAWAH INI ---
-
-
+        if (selectedItem != null) {
+            int newInitial = Integer.parseInt(txtInitial.getText());
+            int newSupply = Integer.parseInt(txtSupply.getText());
+            int finalStock = newInitial + newSupply;
+            InventoryItem updatedItem = new InventoryItem(selectedItem.getItemName(), newInitial, newSupply, finalStock);
+            db.updateItem(updatedItem);
+        }
+        refreshTable();
+        clearFields();
+        txtItem.setDisable(false);
+        selectedItem = null;
+        txtItem.clear();
+        txtInitial.clear();
+        txtSupply.clear();
+        txtItem.setDisable(false);
+        txtItem.setText("");
+        txtInitial.setText("");
+        txtSupply.setText("");
+        txtItem.setDisable(true);
     }
 
     @FXML
@@ -103,7 +137,17 @@ public class UmbrellaController implements Initializable {
         // ==============================================================================
 
         // --- TULIS KODE ANDA DI BAWAH INI ---
-
+        int newInitial = Integer.parseInt(txtInitial.getText());
+        int newSupply = Integer.parseInt(txtSupply.getText());
+        int finalStock = newInitial + newSupply;
+        String itemName = txtItem.getText();
+        InventoryItem newItem = new InventoryItem(itemName, newInitial, newSupply, finalStock);
+        db.addItem(newItem);
+        refreshTable();
+        clearFields();
+        txtItem.clear();
+        txtInitial.clear();
+        txtSupply.clear();
 
     }
 
@@ -123,6 +167,33 @@ public class UmbrellaController implements Initializable {
         // ==============================================================================
 
         // --- TULIS KODE ANDA DI BAWAH INI ---
+        if (selectedItem != null) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Konfirmasi Penghapusan");
+            alert.setHeaderText("Apakah Anda yakin ingin menghapus item ini?");
+            alert.setContentText("Nama Item: " + selectedItem.getItemName());
+        }
+        else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Peringatan");
+            alert.setHeaderText("Anda belum memilih item untuk dihapus.");
+            alert.setContentText("Silakan pilih item terlebih dahulu.");
+        }
+        db.deleteItem(selectedItem.getItemName());
+        masterData.remove(selectedItem);
+        clearFields();
+        selectedItem = null;
+        txtItem.setDisable(false);
+        txtItem.setText("");
+        txtInitial.setText("");
+        txtSupply.setText("");
+        txtItem.setDisable(true);
+        refreshTable();
+        clearFields();
+        txtItem.clear();
+        txtInitial.clear();
+        txtSupply.clear();
+        txtItem.setDisable(false);
 
 
     }
